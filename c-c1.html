@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>CAP Test - Carnet C/C1</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #0b1220; color: #f4f7fb;
+}
+main { max-width: 650px; margin: auto; }
+header { text-align: center; padding: 20px 0; }
+h1 { margin-bottom: 8px; }
+.sub { color: #aebbd0; }
+.card {
+  background: #162238; border: 1px solid #30415c;
+  border-radius: 16px; padding: 20px; margin: 16px 0;
+}
+button {
+  border: 0; border-radius: 10px; padding: 14px;
+  font-size: 16px; font-weight: bold; cursor: pointer;
+}
+.primary { background: #65d6a0; color: #092319; width: 100%; }
+.answer {
+  display: block; width: 100%; margin: 10px 0;
+  text-align: left; background: #22324c; color: white;
+  border: 2px solid transparent; line-height: 1.4;
+}
+.answer:disabled { opacity: 1; cursor: default; }
+.answer.correct { border-color: #65d6a0; background: #164331; }
+.answer.wrong { border-color: #ff8585; background: #502b36; }
+#feedback { line-height: 1.5; margin-top: 14px; }
+.small { color: #aebbd0; font-size: 14px; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div style="font-size:42px">🚚</div>
+  <h1>Carnet C / C1</h1>
+  <div class="sub">CAP Test · Test de práctica</div>
+</header>
+
+<section class="card" id="intro">
+  <h2>¿Preparado para empezar?</h2>
+  <p>Contesta las preguntas y descubre tu resultado al final.</p>
+  <p class="small">Estas son preguntas de práctica, no un examen oficial de la DGT.</p>
+  <button class="primary" onclick="startTest()">Empezar test</button>
+</section>
+
+<section class="card hidden" id="quiz">
+  <div class="small" id="progress"></div>
+  <h2 id="question"></h2>
+  <div id="answers"></div>
+  <div id="feedback" aria-live="polite"></div>
+  <button class="primary hidden" id="next" onclick="nextQuestion()">Siguiente pregunta</button>
+</section>
+
+<section class="card hidden" id="result">
+  <h2>Resultado del test</h2>
+  <h1 id="score"></h1>
+  <p id="summary"></p>
+  <button class="primary" onclick="startTest()">Repetir test</button>
+</section>
+
+<p class="small" style="text-align:center">
+  Material de práctica para preparar el permiso de camión.
+</p>
+</main>
+
+<script>
+const questions = [
+ {
+  q: "¿Qué vehículos permite conducir el permiso C1, con carácter general?",
+  a: [
+   "Vehículos de hasta 3.500 kg de MMA",
+   "Vehículos de más de 3.500 kg y hasta 7.500 kg de MMA",
+   "Autobuses de cualquier masa"
+  ],
+  correct: 1,
+  explain: "El permiso C1 permite conducir vehículos distintos de los de las categorías D1 o D cuya masa máxima autorizada exceda de 3.500 kg y no supere 7.500 kg, con los demás requisitos aplicables."
+ },
+ {
+  q: "Antes de iniciar un descenso largo con un camión, ¿qué es recomendable?",
+  a: [
+   "Bajar en punto muerto",
+   "Elegir una marcha adecuada antes del descenso",
+   "Apagar el motor para ahorrar combustible"
+  ],
+  correct: 1,
+  explain: "Una marcha adecuada permite aprovechar el freno motor y ayuda a controlar la velocidad."
+ },
+ {
+  q: "¿Cómo debe transportarse la carga?",
+  a: [
+   "Puede quedar suelta si el trayecto es corto",
+   "Debe estar distribuida y sujeta para evitar desplazamientos peligrosos",
+   "Solo hay que sujetarla en autopista"
+  ],
+  correct: 1,
+  explain: "La carga debe estar colocada y sujeta de forma que no comprometa la estabilidad ni la seguridad."
+ },
+ {
+  q: "¿Qué debes hacer antes de cambiar de carril con un vehículo pesado?",
+  a: [
+   "Comprobar los espejos y el ángulo muerto, y señalizar",
+   "Mirar solo el espejo interior",
+   "Cambiar de carril rápidamente sin señalizar"
+  ],
+  correct: 0,
+  explain: "Los vehículos pesados tienen ángulos muertos importantes. Comprueba el entorno y señaliza con antelación."
+ },
+ {
+  q: "Si el vehículo dispone de ABS y necesitas frenar de emergencia, ¿qué debes hacer?",
+  a: [
+   "Bombear el pedal de freno repetidamente",
+   "Pisar firmemente el freno y mantener el control del vehículo",
+   "Apagar el motor inmediatamente"
+  ],
+  correct: 1,
+  explain: "Con ABS, normalmente se debe aplicar presión firme y continua sobre el freno, siguiendo las instrucciones del vehículo."
+ },
+ {
+  q: "Si notas síntomas de sueño mientras conduces, ¿qué debes hacer?",
+  a: [
+   "Abrir la ventana y continuar sin parar",
+   "Aumentar la velocidad para llegar antes",
+   "Detenerte en un lugar seguro y descansar"
+  ],
+  correct: 2,
+  explain: "La somnolencia reduce la atención y el tiempo de reacción. La medida segura es parar y descansar."
+ },
+ {
+  q: "¿Qué debes comprobar respecto a los neumáticos antes de un viaje?",
+  a: [
+   "Su estado y presión según las indicaciones del fabricante",
+   "Solo su color",
+   "Únicamente la presión de las ruedas delanteras"
+  ],
+  correct: 0,
+  explain: "El estado, el desgaste y la presión correcta de los neumáticos son fundamentales para la seguridad."
+ },
+ {
+  q: "¿Qué debes hacer si se enciende una luz roja de advertencia que indica un problema grave?",
+  a: [
+   "Ignorarla hasta terminar el viaje",
+   "Detenerte en un lugar seguro y consultar las instrucciones del vehículo",
+   "Acelerar para comprobar si se apaga"
+  ],
+  correct: 1,
+  explain: "Una advertencia roja puede indicar un problema grave. Actúa según el manual del vehículo y no continúes si no es seguro."
+ }
+];
+
+let index = 0;
+let correctCount = 0;
+let mistakes = [];
+let answered = false;
+
+function startTest() {
+  index = 0;
+  correctCount = 0;
+  mistakes = [];
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const item = questions[index];
+  document.getElementById("progress").textContent =
+    "Pregunta " + (index + 1) + " de " + questions.length;
+  document.getElementById("question").textContent = item.q;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("next").classList.add("hidden");
+  const container = document.getElementById("answers");
+  container.innerHTML = "";
+
+  item.a.forEach((answer, i) => {
+    const button = document.createElement("button");
+    button.className = "answer";
+    button.textContent = String.fromCharCode(65 + i) + ". " + answer;
+    button.onclick = () => chooseAnswer(i);
+    container.appendChild(button);
+  });
+}
+
+function chooseAnswer(choice) {
+  if (answered) return;
+  answered = true;
+  const item = questions[index];
+  const buttons = document.querySelectorAll(".answer");
+
+  buttons.forEach((button, i) => {
+    button.disabled = true;
+    if (i === item.correct) button.classList.add("correct");
+    if (i === choice && i !== item.correct) button.classList.add("wrong");
+  });
+
+  const feedback = document.getElementById("feedback");
+  if (choice === item.correct) {
+    correctCount++;
+    feedback.innerHTML = "<strong>¡Correcto!</strong><br>" + item.explain;
+  } else {
+    mistakes.push(index);
+    feedback.innerHTML = "<strong>No es correcto.</strong><br>Respuesta correcta: " +
+      item.a[item.correct] + "<br>" + item.explain;
+  }
+
+  const next = document.getElementById("next");
+  next.textContent = index === questions.length - 1
+    ? "Ver resultado" : "Siguiente pregunta";
+  next.classList.remove("hidden");
+}
+
+function nextQuestion() {
+  if (!answered) return;
+  index++;
+  if (index < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("score").textContent =
+    correctCount + " / " + questions.length;
+  document.getElementById("summary").textContent =
+    "Has acertado " + correctCount + " preguntas y fallado " +
+    mistakes.length + ". " +
+    (mistakes.length === 0
+      ? "¡Perfecto, no has fallado ninguna!"
+      : "Repite el test para seguir practicando.");
+}
+</script>
+</body>
+</html>
