@@ -1,248 +1,186 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1220">
-<title>CAP Test - Carnet C/C1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test C/C1 Camión</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0; padding: 20px;
-  font-family: Arial, sans-serif;
-  background: #0b1220; color: #f4f7fb;
-}
-main { max-width: 650px; margin: auto; }
-header { text-align: center; padding: 20px 0; }
-h1 { margin-bottom: 8px; }
-.sub { color: #aebbd0; }
-.card {
-  background: #162238; border: 1px solid #30415c;
-  border-radius: 16px; padding: 20px; margin: 16px 0;
-}
-button {
-  border: 0; border-radius: 10px; padding: 14px;
-  font-size: 16px; font-weight: bold; cursor: pointer;
-}
-.primary { background: #65d6a0; color: #092319; width: 100%; }
-.answer {
-  display: block; width: 100%; margin: 10px 0;
-  text-align: left; background: #22324c; color: white;
-  border: 2px solid transparent; line-height: 1.4;
-}
-.answer:disabled { opacity: 1; cursor: default; }
-.answer.correct { border-color: #65d6a0; background: #164331; }
-.answer.wrong { border-color: #ff8585; background: #502b36; }
-#feedback { line-height: 1.5; margin-top: 14px; }
-.small { color: #aebbd0; font-size: 14px; }
-.hidden { display: none; }
+body{font-family:Arial,sans-serif;background:#f2f4f8;color:#172033;margin:0;padding:16px}
+main{max-width:760px;margin:auto}.card{background:white;padding:20px;border-radius:14px;margin:12px 0;box-shadow:0 2px 10px #0001}
+button{padding:12px 15px;border:0;border-radius:9px;margin:5px 4px 5px 0;font-size:16px;cursor:pointer;background:#155eef;color:white}
+.secondary{background:#e6eaf2;color:#172033}.answer{display:block;width:100%;text-align:left;background:#f4f6fa;color:#172033;border:2px solid #dce1ea;margin:9px 0}
+.correct{background:#e3f7e9!important;border-color:#218653!important}.wrong{background:#ffe8e8!important;border-color:#c33!important}
+.hidden{display:none}.muted{color:#606b7b;line-height:1.5}
 </style>
 </head>
-<body>
-<main>
-<header>
-  <div style="font-size:42px">🚚</div>
-  <h1>Carnet C / C1</h1>
-  <div class="sub">CAP Test · Test de práctica</div>
-</header>
-
-<section class="card" id="intro">
-  <h2>¿Preparado para empezar?</h2>
-  <p>Contesta las preguntas y descubre tu resultado al final.</p>
-  <p class="small">Estas son preguntas de práctica, no un examen oficial de la DGT.</p>
-  <button class="primary" onclick="startTest()">Empezar test</button>
+<body><main>
+<section class="card">
+<h1>Test C/C1 — Camión</h1>
+<p class="muted">20 preguntas aleatorias · Máximo 2 errores para aprobar.</p>
+<p class="muted">Preguntas de práctica sobre vehículos pesados; no son preguntas literales verificadas del examen oficial.</p>
+<p><a href="https://www.dgt.es/nuestros-servicios/permisos-de-conducir/obtener-un-nuevo-permiso-de-conducir/requisitos-preparacion-y-presentacion-a-examen">Tests oficiales de la DGT</a></p>
+<button id="start">Empezar test</button>
+<button id="review" class="secondary">Repasar fallos (0)</button>
+<button id="clear" class="secondary">Borrar fallos</button>
+<p class="muted">Los fallos se guardan en este navegador. Si borras los datos de Safari, podrían perderse.</p>
 </section>
-
-<section class="card hidden" id="quiz">
-  <div class="small" id="progress"></div>
-  <h2 id="question"></h2>
-  <div id="answers"></div>
-  <div id="feedback" aria-live="polite"></div>
-  <button class="primary hidden" id="next" onclick="nextQuestion()">Siguiente pregunta</button>
+<section id="quiz" class="card hidden">
+<p id="progress"></p><h2 id="question"></h2>
+<div id="answers"></div><p id="explanation"></p>
+<button id="next" disabled>Siguiente</button>
 </section>
-
-<section class="card hidden" id="result">
-  <h2>Resultado del test</h2>
-  <h1 id="score"></h1>
-  <p id="summary"></p>
-  <button class="primary" onclick="startTest()">Repetir test</button>
+<section id="result" class="card hidden">
+<h2 id="resultTitle"></h2><p id="resultText"></p>
+<button id="again">Otro test</button><button id="review2" class="secondary">Repasar fallos</button>
 </section>
-
-<p class="small" style="text-align:center">
-  Material de práctica para preparar el permiso de camión.
-</p>
 </main>
-
 <script>
 const questions = [
- {
-  q: "¿Qué vehículos permite conducir el permiso C1, con carácter general?",
-  a: [
-   "Vehículos de hasta 3.500 kg de MMA",
-   "Vehículos de más de 3.500 kg y hasta 7.500 kg de MMA",
-   "Autobuses de cualquier masa"
-  ],
-  correct: 1,
-  explain: "El permiso C1 permite conducir vehículos distintos de los de las categorías D1 o D cuya masa máxima autorizada exceda de 3.500 kg y no supere 7.500 kg, con los demás requisitos aplicables."
- },
- {
-  q: "Antes de iniciar un descenso largo con un camión, ¿qué es recomendable?",
-  a: [
-   "Bajar en punto muerto",
-   "Elegir una marcha adecuada antes del descenso",
-   "Apagar el motor para ahorrar combustible"
-  ],
-  correct: 1,
-  explain: "Una marcha adecuada permite aprovechar el freno motor y ayuda a controlar la velocidad."
- },
- {
-  q: "¿Cómo debe transportarse la carga?",
-  a: [
-   "Puede quedar suelta si el trayecto es corto",
-   "Debe estar distribuida y sujeta para evitar desplazamientos peligrosos",
-   "Solo hay que sujetarla en autopista"
-  ],
-  correct: 1,
-  explain: "La carga debe estar colocada y sujeta de forma que no comprometa la estabilidad ni la seguridad."
- },
- {
-  q: "¿Qué debes hacer antes de cambiar de carril con un vehículo pesado?",
-  a: [
-   "Comprobar los espejos y el ángulo muerto, y señalizar",
-   "Mirar solo el espejo interior",
-   "Cambiar de carril rápidamente sin señalizar"
-  ],
-  correct: 0,
-  explain: "Los vehículos pesados tienen ángulos muertos importantes. Comprueba el entorno y señaliza con antelación."
- },
- {
-  q: "Si el vehículo dispone de ABS y necesitas frenar de emergencia, ¿qué debes hacer?",
-  a: [
-   "Bombear el pedal de freno repetidamente",
-   "Pisar firmemente el freno y mantener el control del vehículo",
-   "Apagar el motor inmediatamente"
-  ],
-  correct: 1,
-  explain: "Con ABS, normalmente se debe aplicar presión firme y continua sobre el freno, siguiendo las instrucciones del vehículo."
- },
- {
-  q: "Si notas síntomas de sueño mientras conduces, ¿qué debes hacer?",
-  a: [
-   "Abrir la ventana y continuar sin parar",
-   "Aumentar la velocidad para llegar antes",
-   "Detenerte en un lugar seguro y descansar"
-  ],
-  correct: 2,
-  explain: "La somnolencia reduce la atención y el tiempo de reacción. La medida segura es parar y descansar."
- },
- {
-  q: "¿Qué debes comprobar respecto a los neumáticos antes de un viaje?",
-  a: [
-   "Su estado y presión según las indicaciones del fabricante",
-   "Solo su color",
-   "Únicamente la presión de las ruedas delanteras"
-  ],
-  correct: 0,
-  explain: "El estado, el desgaste y la presión correcta de los neumáticos son fundamentales para la seguridad."
- },
- {
-  q: "¿Qué debes hacer si se enciende una luz roja de advertencia que indica un problema grave?",
-  a: [
-   "Ignorarla hasta terminar el viaje",
-   "Detenerte en un lugar seguro y consultar las instrucciones del vehículo",
-   "Acelerar para comprobar si se apaga"
-  ],
-  correct: 1,
-  explain: "Una advertencia roja puede indicar un problema grave. Actúa según el manual del vehículo y no continúes si no es seguro."
- }
+{q:"¿Qué permiso puede ser necesario para conducir un camión cuya masa máxima autorizada supera los límites del permiso C1?",a:["El permiso C, si cumple sus requisitos","Solo el permiso AM","Ningún permiso"],c:0,e:"El permiso C habilita para vehículos de mercancías de mayor masa que los incluidos en C1, dentro de las condiciones legales."},
+{q:"¿Qué debe hacerse antes de iniciar un trayecto con un vehículo pesado?",a:["Revisar el estado general, neumáticos, luces y frenos","Comprobar solo el combustible","Revisar únicamente la radio"],c:0,e:"La inspección previa permite detectar defectos que pueden afectar a la seguridad."},
+{q:"¿Cómo debe colocarse y sujetarse la carga?",a:["De forma que no se desplace peligrosamente y respete masas y dimensiones","Sin sujeción si el trayecto es corto","Toda en un solo lado"],c:0,e:"La carga debe distribuirse y sujetarse adecuadamente."},
+{q:"¿Qué riesgo supone elevar demasiado el centro de gravedad?",a:["Mayor riesgo de vuelco","Menor estabilidad en cualquier situación no es posible","Ninguno"],c:0,e:"Un centro de gravedad elevado puede perjudicar la estabilidad del vehículo."},
+{q:"En un descenso prolongado, ¿qué ayuda a controlar la velocidad?",a:["Circular en punto muerto","Usar una marcha adecuada y aprovechar el freno motor","Mantener pisado el embrague"],c:1,e:"La marcha adecuada y el freno motor reducen el uso continuo de los frenos de servicio."},
+{q:"¿Por qué es importante mantener distancia de seguridad?",a:["Para disponer de espacio suficiente para reaccionar y detenerse","Solo para ahorrar combustible","Para permitir que otros circulen pegados"],c:0,e:"La distancia debe adaptarse a la velocidad, masa, visibilidad y estado de la calzada."},
+{q:"¿Qué debe hacerse ante una avería grave del sistema de frenos?",a:["Continuar hasta el destino","Detenerse con seguridad y no continuar hasta solucionar el problema","Usar solo el freno de estacionamiento mientras se circula"],c:1,e:"Una avería grave en los frenos compromete la seguridad."},
+{q:"¿Qué función cumple el dibujo de la banda de rodadura?",a:["Ayuda a evacuar agua y mantener adherencia","Sustituye al ABS","Reduce la masa autorizada"],c:0,e:"El dibujo contribuye a mantener la adherencia, especialmente sobre pavimento mojado."},
+{q:"¿Qué puede causar una presión incorrecta de los neumáticos?",a:["Desgaste irregular, calentamiento y peor comportamiento","Solo un cambio en el color del neumático","Ningún efecto"],c:0,e:"Debe mantenerse la presión indicada por el fabricante según las condiciones de uso."},
+{q:"Antes de dar marcha atrás con un camión, ¿qué debe hacer?",a:["Comprobar el entorno y maniobrar sin poner a nadie en peligro","Confiar únicamente en los espejos","Acelerar para acabar antes"],c:0,e:"Hay que vigilar los ángulos muertos y pedir ayuda si la visibilidad no es suficiente."},
+{q:"¿Qué son los ángulos muertos?",a:["Zonas que el conductor no puede observar directamente","Zonas de descanso","Partes del motor"],c:0,e:"Pueden ocultar peatones, ciclistas u otros vehículos."},
+{q:"¿Qué puede ocurrir si la carga se desplaza durante una curva?",a:["Puede desestabilizar el vehículo","Mejora siempre la adherencia","Solo afecta al consumo"],c:0,e:"El movimiento de la carga puede alterar el equilibrio y aumentar el riesgo de vuelco."},
+{q:"Si nota fatiga intensa al volante, ¿qué debe hacer?",a:["Parar en un lugar seguro y descansar","Acelerar para llegar antes","Seguir con la ventanilla abierta"],c:0,e:"La fatiga reduce la atención y aumenta el tiempo de reacción."},
+{q:"¿Qué debe hacer ante una señal de limitación de masa?",a:["Respetar la limitación aplicable al vehículo","Ignorarla si el camión va vacío","Pasar si no hay tráfico"],c:0,e:"Deben respetarse las restricciones señalizadas."},
+{q:"Antes de pasar bajo un puente, ¿qué debe comprobar?",a:["Que la altura total del vehículo y la carga sea compatible con la altura libre","Solo la altura de la cabina","Solo la anchura"],c:0,e:"Debe tenerse en cuenta la altura total del vehículo, incluida la carga."},
+{q:"¿Qué riesgo tiene una carga mal sujeta durante una frenada?",a:["Puede desplazarse y afectar a la estabilidad","Queda automáticamente mejor sujeta","Solo aumenta el consumo"],c:0,e:"La carga debe quedar asegurada para soportar las fuerzas previsibles."},
+{q:"¿Cómo conviene aproximarse a una curva?",a:["Adaptar la velocidad antes de entrar","Frenar bruscamente en mitad de la curva","Acelerar de forma intensa"],c:0,e:"Conviene reducir la velocidad antes de la curva y evitar maniobras bruscas."},
+{q:"Si aparece un testigo que indica una avería grave, ¿qué debe hacer?",a:["Ignorarlo","Actuar según el manual y detenerse de forma segura si es necesario","Taparlo"],c:1,e:"Debe atenderse el aviso conforme a las instrucciones del fabricante."},
+{q:"¿Cómo debe inmovilizarse un camión estacionado en una pendiente?",a:["Aplicando el freno de estacionamiento y las medidas adecuadas","Dejándolo en punto muerto","Confiando en que la carga lo sujete"],c:0,e:"El vehículo debe quedar inmovilizado de forma segura."},
+{q:"En una zona con peatones y visibilidad limitada, ¿qué conviene hacer?",a:["Reducir la velocidad y estar preparado para detenerse","Mantener la velocidad","Tocar el claxon y no frenar"],c:0,e:"La velocidad debe permitir reaccionar ante los peligros previsibles."},
+{q:"¿Qué ocurre con la distancia de detención si aumenta la velocidad?",a:["Aumenta","Disminuye","No cambia"],c:0,e:"A mayor velocidad, mayor distancia de reacción y de frenado."},
+{q:"Si la carga tapa las luces o la matrícula, ¿qué debe hacer?",a:["Colocarla de forma que los dispositivos obligatorios queden visibles","Circular solo de día","Encender las luces largas"],c:0,e:"La carga no debe ocultar las luces, señales ni la matrícula."},
+{q:"¿Cómo debe conducirse sobre una calzada mojada?",a:["Con movimientos suaves y velocidad adaptada","Girando bruscamente","Frenando y acelerando repetidamente"],c:0,e:"Una conducción suave reduce el riesgo de perder adherencia."},
+{q:"¿Cuál es una función del ABS?",a:["Ayudar a evitar el bloqueo de las ruedas al frenar","Permitir circular más rápido en cualquier situación","Eliminar la distancia de seguridad"],c:0,e:"El ABS ayuda a mantener la capacidad de dirección durante una frenada."},
+{q:"Si debe detenerse por una avería en carretera, ¿qué debe hacer?",a:["Elegir un lugar seguro y señalizar según la normativa vigente","Detenerse sin advertir a nadie","Permanecer en el carril siempre"],c:0,e:"La prioridad es evitar nuevos riesgos y advertir a los demás usuarios."},
+{q:"¿Qué debe considerarse antes de adelantar con un vehículo pesado?",a:["La longitud, velocidad, visibilidad y espacio disponible","Solo el color del vehículo adelantado","Solo el tamaño del volante"],c:0,e:"El adelantamiento debe planificarse con visibilidad y espacio suficientes."},
+{q:"¿Qué riesgo tiene sobrecargar un eje?",a:["Puede perjudicar la estabilidad, neumáticos, dirección y frenada","Ninguno si la carga está centrada","Solo aumenta la comodidad"],c:0,e:"Deben respetarse las masas máximas y las cargas por eje permitidas."},
+{q:"Antes de abrir una puerta hacia la calzada, ¿qué debe hacer?",a:["Comprobar que puede abrirla sin peligro para otros usuarios","Abrirla rápidamente","Mirar solo después de abrir"],c:0,e:"Hay que comprobar el entorno antes de abrir la puerta."},
+{q:"¿Qué ayuda a reducir el consumo y desgaste?",a:["Anticipar el tráfico y evitar aceleraciones y frenadas innecesarias","Acelerar intensamente y frenar tarde","Usar siempre una marcha muy corta"],c:0,e:"La conducción anticipativa y suave suele reducir el consumo y el desgaste."},
+{q:"Con niebla intensa, ¿qué conducta es más segura?",a:["Adaptar la velocidad y usar las luces adecuadas","Seguir muy cerca al vehículo precedente","Usar siempre las luces largas"],c:0,e:"La visibilidad disponible debe determinar la velocidad y la distancia."}
 ];
+</script>
 
-let index = 0;
-let correctCount = 0;
-let mistakes = [];
-let answered = false;
+const KEY = "cc1_fallos_v2";
+let mistakes = loadMistakes(), current = [], index = 0, errors = 0, mode = "test", answered = false;
+questions.forEach((q,i)=>q.id="q"+(i+1));
 
-function startTest() {
-  index = 0;
-  correctCount = 0;
-  mistakes = [];
-  document.getElementById("intro").classList.add("hidden");
-  document.getElementById("result").classList.add("hidden");
+function loadMistakes(){
+  try { return JSON.parse(localStorage.getItem(KEY)||"[]"); }
+  catch(e) { return []; }
+}
+function saveMistakes(){
+  try { localStorage.setItem(KEY,JSON.stringify(mistakes)); }
+  catch(e) { alert("El navegador no permite guardar los fallos."); }
+  updateCount();
+}
+function updateCount(){
+  document.getElementById("review").textContent="Repasar fallos ("+mistakes.length+")";
+  document.getElementById("review2").disabled=mistakes.length===0;
+  document.getElementById("review").disabled=mistakes.length===0;
+}
+function shuffle(list){
+  const a=[...list];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function begin(list, selectedMode){
+  current=list;mode=selectedMode;index=0;errors=0;answered=false;
   document.getElementById("quiz").classList.remove("hidden");
-  showQuestion();
+  document.getElementById("result").classList.add("hidden");
+  render();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});
 }
-
-function showQuestion() {
-  answered = false;
-  const item = questions[index];
-  document.getElementById("progress").textContent =
-    "Pregunta " + (index + 1) + " de " + questions.length;
-  document.getElementById("question").textContent = item.q;
-  document.getElementById("feedback").textContent = "";
-  document.getElementById("next").classList.add("hidden");
-  const container = document.getElementById("answers");
-  container.innerHTML = "";
-
-  item.a.forEach((answer, i) => {
-    const button = document.createElement("button");
-    button.className = "answer";
-    button.textContent = String.fromCharCode(65 + i) + ". " + answer;
-    button.onclick = () => chooseAnswer(i);
-    container.appendChild(button);
+function startTest(){
+  begin(shuffle(questions).slice(0,20),"test");
+}
+function startReview(){
+  const list=mistakes.map(id=>questions.find(q=>q.id===id)).filter(Boolean);
+  if(!list.length){alert("No tienes fallos guardados.");return;}
+  begin(shuffle(list),"review");
+}
+function render(){
+  answered=false;
+  const q=current[index];
+  document.getElementById("progress").textContent="Pregunta "+(index+1)+" de "+current.length+" · Errores: "+errors;
+  document.getElementById("question").textContent=q.q;
+  document.getElementById("answers").innerHTML="";
+  document.getElementById("explanation").textContent="";
+  const next=document.getElementById("next");
+  next.disabled=true;
+  next.textContent=index===current.length-1?"Ver resultado":"Siguiente";
+  q.a.forEach((text,i)=>{
+    const b=document.createElement("button");
+    b.className="answer";
+    b.textContent=String.fromCharCode(65+i)+") "+text;
+    b.onclick=()=>choose(i,b);
+    document.getElementById("answers").appendChild(b);
   });
 }
-
-function chooseAnswer(choice) {
-  if (answered) return;
-  answered = true;
-  const item = questions[index];
-  const buttons = document.querySelectorAll(".answer");
-
-  buttons.forEach((button, i) => {
-    button.disabled = true;
-    if (i === item.correct) button.classList.add("correct");
-    if (i === choice && i !== item.correct) button.classList.add("wrong");
+function choose(choice,button){
+  if(answered)return;
+  answered=true;
+  const q=current[index];
+  [...document.getElementById("answers").children].forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.c)b.classList.add("correct");
   });
-
-  const feedback = document.getElementById("feedback");
-  if (choice === item.correct) {
-    correctCount++;
-    feedback.innerHTML = "<strong>¡Correcto!</strong><br>" + item.explain;
-  } else {
-    mistakes.push(index);
-    feedback.innerHTML = "<strong>No es correcto.</strong><br>Respuesta correcta: " +
-      item.a[item.correct] + "<br>" + item.explain;
+  if(choice!==q.c){
+    errors++;
+    button.classList.add("wrong");
+    if(!mistakes.includes(q.id))mistakes.push(q.id);
+  }else if(mode==="review"){
+    mistakes=mistakes.filter(id=>id!==q.id);
   }
-
-  const next = document.getElementById("next");
-  next.textContent = index === questions.length - 1
-    ? "Ver resultado" : "Siguiente pregunta";
-  next.classList.remove("hidden");
+  saveMistakes();
+  document.getElementById("progress").textContent="Pregunta "+(index+1)+" de "+current.length+" · Errores: "+errors;
+  document.getElementById("explanation").textContent=
+    (choice===q.c?"Correcto. ":"Incorrecto. Respuesta correcta: "+String.fromCharCode(65+q.c)+". ")+q.e;
+  document.getElementById("next").disabled=false;
 }
-
-function nextQuestion() {
-  if (!answered) return;
-  index++;
-  if (index < questions.length) {
-    showQuestion();
-  } else {
-    showResult();
-  }
+function nextQuestion(){
+  if(!answered)return;
+  if(index<current.length-1){index++;render();}
+  else finish();
 }
-
-function showResult() {
+function finish(){
   document.getElementById("quiz").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
-  document.getElementById("score").textContent =
-    correctCount + " / " + questions.length;
-  document.getElementById("summary").textContent =
-    "Has acertado " + correctCount + " preguntas y fallado " +
-    mistakes.length + ". " +
-    (mistakes.length === 0
-      ? "¡Perfecto, no has fallado ninguna!"
-      : "Repite el test para seguir practicando.");
+  if(mode==="review"){
+    document.getElementById("resultTitle").textContent="Repaso terminado";
+    document.getElementById("resultText").textContent=
+      "Has terminado el repaso. Quedan "+mistakes.length+" fallos guardados. Las preguntas acertadas durante el repaso se han eliminado de la lista.";
+  }else{
+    const pass=errors<=2;
+    document.getElementById("resultTitle").textContent=pass?"¡Aprobado!":"No apto";
+    document.getElementById("resultText").textContent=
+      "Resultado: "+errors+" errores de 20. "+(pass?"Has aprobado con un máximo de 2 errores.":"Necesitas un máximo de 2 errores para aprobar.");
+  }
+  updateCount();
+  document.getElementById("result").scrollIntoView({behavior:"smooth"});
 }
+document.getElementById("start").onclick=startTest;
+document.getElementById("review").onclick=startReview;
+document.getElementById("review2").onclick=startReview;
+document.getElementById("next").onclick=nextQuestion;
+document.getElementById("again").onclick=startTest;
+document.getElementById("clear").onclick=()=>{
+  if(confirm("¿Quieres borrar todos los fallos guardados?")){
+    mistakes=[];saveMistakes();
+  }
+};
+updateCount();
 </script>
 </body>
 </html>
